@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Video Translator</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: #fff; text-align: center; padding: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 12px; max-width: 400px; margin: 20px auto; }
+        button { background: #8b5cf6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Universal Video Translator</h1>
+    <div class="card">
+        <h3>Abonnement Pass Vidéo</h3>
+        <p>Accès illimité aux traductions IA</p>
+        <button id="pay-btn">Payer 1 Pi</button>
+    </div>
+
+    <script>
+        const Pi = window.Pi;
+        Pi.init({ version: "2.0", sandbox: true });
+
+        const API_BASE = "https://universal-translator-backend.onrender.com/api";
+
+        document.getElementById('pay-btn').addEventListener('click', async () => {
+            try {
+                const payment = await Pi.createPayment({
+                    amount: 1,
+                    memo: "Abonnement Universal Video Translator",
+                    metadata: { type: "subscription" }
+                }, {
+                    onReadyForServerApproval: (paymentId) => {
+                        fetch(`${API_BASE}/approve`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ paymentId })
+                        });
+                    },
+                    onReadyForServerCompletion: (paymentId, txid) => {
+                        fetch(`${API_BASE}/complete`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ paymentId, txid })
+                        });
+                    },
+                    onCancel: (paymentId) => console.log("Paiement annulé"),
+                    onError: (error) => console.error("Erreur de paiement", error)
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
+

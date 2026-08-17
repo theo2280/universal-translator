@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/validation-key.txt", "destination": "/validation-key.txt" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+
